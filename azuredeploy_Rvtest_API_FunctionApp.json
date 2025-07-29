@@ -1,0 +1,490 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location where to deploy the resources"
+      }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Log Analytics workspace name"
+      }
+    },
+    "dataCollectionEndpointName": {
+      "type": "string",
+      "metadata": {
+        "description": "Data Collection Endpoint name"
+      }
+    },
+    "dataCollectionRuleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Data Collection Rule name"
+      }
+    },
+    "ingestionFunctionHostingPlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the hosting plan for the ingestion function"
+      }
+    },
+    "ingestionFunctionName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the ingestion function"
+      }
+    },
+    "ingestionFunctionSchedule": {
+      "type": "string",
+      "defaultValue": "0 */5 * * * *",
+      "metadata": {
+        "description": "The schedule for the ingestion function"
+      }
+    },
+    "ingestionFunctionTempStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the storage account where the ingestion function will store temporary data"
+      }
+    },
+    "eventsStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the storage account from where the ingestion function will read data"
+      }
+    },
+    "eventsStorageContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the storage container for the input events"
+      }
+    },
+    "ingestionFunctionPackageUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The SAS url where the code of the function is stored"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "dataIngestionDeploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "dataCollectionEndpointName": {
+            "value": "[parameters('dataCollectionEndpointName')]"
+          },
+          "dataCollectionRuleName": {
+            "value": "[parameters('dataCollectionRuleName')]"
+          },
+          "ingestionFunctionHostingPlanName": {
+            "value": "[parameters('ingestionFunctionHostingPlanName')]"
+          },
+          "ingestionFunctionName": {
+            "value": "[parameters('ingestionFunctionName')]"
+          },
+          "ingestionFunctionSchedule": {
+            "value": "[parameters('ingestionFunctionSchedule')]"
+          },
+          "ingestionFunctionTempStorageAccountName": {
+            "value": "[parameters('ingestionFunctionTempStorageAccountName')]"
+          },
+          "eventsStorageAccountName": {
+            "value": "[parameters('eventsStorageAccountName')]"
+          },
+          "eventsStorageContainerName": {
+            "value": "[parameters('eventsStorageContainerName')]"
+          },
+          "ingestionFunctionPackageUrl": {
+            "value": "[parameters('ingestionFunctionPackageUrl')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5095010011199797235"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location where to deploy the resources"
+              }
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace name"
+              }
+            },
+            "dataCollectionEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Data Collection Endpoint name"
+              }
+            },
+            "dataCollectionRuleName": {
+              "type": "string",
+              "metadata": {
+                "description": "Data Collection Rule name"
+              }
+            },
+            "ingestionFunctionHostingPlanName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the hosting plan for the ingestion function"
+              }
+            },
+            "ingestionFunctionName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the ingestion function"
+              }
+            },
+            "ingestionFunctionSchedule": {
+              "type": "string",
+              "metadata": {
+                "description": "The schedule for the ingestion function"
+              }
+            },
+            "ingestionFunctionTempStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the storage account where the ingestion function will store temporary data"
+              }
+            },
+            "eventsStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the storage account from where the ingestion function will read data"
+              }
+            },
+            "eventsStorageContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the storage container for the input events"
+              }
+            },
+            "ingestionFunctionPackageUrl": {
+              "type": "string",
+              "metadata": {
+                "description": "The SAS url where the code of the function is stored"
+              }
+            }
+          },
+          "variables": {
+            "ingestionFunctionAppInsightsName": "[parameters('ingestionFunctionName')]",
+            "securityEventsTableName": "RvEventLogs_CL",
+            "securityEventsStreamName": "[format('Custom-{0}', variables('securityEventsTableName'))]",
+            "storageBlobDataContributorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+            "monitoringMetricsPublisher": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')]"
+          },
+          "resources": {
+            "logAnalyticsWorkspace": {
+              "existing": true,
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2021-06-01",
+              "name": "[parameters('logAnalyticsWorkspaceName')]"
+            },
+            "eventsStorageBlobContainer": {
+              "existing": true,
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}/default/{1}', parameters('eventsStorageAccountName'), parameters('eventsStorageContainerName'))]"
+            },
+            "securityEventsTable": {
+              "type": "Microsoft.OperationalInsights/workspaces/tables",
+              "apiVersion": "2025-02-01",
+              "name": "[format('{0}/{1}', parameters('logAnalyticsWorkspaceName'), variables('securityEventsTableName'))]",
+              "properties": {
+                "plan": "Analytics",
+                "retentionInDays": 4,
+                "totalRetentionInDays": 4,
+                "schema": {
+                  "columns": [
+                    {
+                      "name": "TimeGenerated",
+                      "type": "datetime"
+                    },
+                    {
+                      "name": "eventType_s",
+                      "type": "string"
+                    },
+                    {
+                      "name": "name_s",
+                      "type": "string"
+                    }
+                  ],
+                  "name": "[variables('securityEventsTableName')]"
+                }
+              }
+            },
+            "dataCollectionEndpoint": {
+              "type": "Microsoft.Insights/dataCollectionEndpoints",
+              "apiVersion": "2023-03-11",
+              "name": "[parameters('dataCollectionEndpointName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "networkAcls": {
+                  "publicNetworkAccess": "Enabled"
+                }
+              }
+            },
+            "dataCollectionRule": {
+              "type": "Microsoft.Insights/dataCollectionRules",
+              "apiVersion": "2023-03-11",
+              "name": "[parameters('dataCollectionRuleName')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "kind": "Direct",
+              "location": "[parameters('location')]",
+              "properties": {
+                "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]",
+                "streamDeclarations": {
+                  "[format('{0}', variables('securityEventsStreamName'))]": {
+                    "columns": [
+                      {
+                        "name": "TimeGenerated",
+                        "type": "datetime"
+                      },
+                      {
+                        "name": "name_s",
+                        "type": "string"
+                      },
+                      {
+                        "name": "eventType_s",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "dataSources": {},
+                "destinations": {
+                  "logAnalytics": [
+                    {
+                      "name": "default",
+                      "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+                    }
+                  ]
+                },
+                "dataFlows": [
+                  {
+                    "streams": [
+                      "[variables('securityEventsStreamName')]"
+                    ],
+                    "destinations": [
+                      "default"
+                    ],
+                    "transformKql": "source",
+                    "outputStream": "[variables('securityEventsStreamName')]"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "dataCollectionEndpoint",
+                "securityEventsTable"
+              ]
+            },
+            "ingestionFunctionHostingPlan": {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('ingestionFunctionHostingPlanName')]",
+              "kind": "functionapp,linux",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+              },
+              "properties": {
+                "reserved": true
+              }
+            },
+            "ingestionFunctionTempStorageAccount": {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-01-01",
+              "name": "[parameters('ingestionFunctionTempStorageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": false
+              }
+            },
+            "ingestionFunctionAppInsights": {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[variables('ingestionFunctionAppInsightsName')]",
+              "location": "[parameters('location')]",
+              "kind": "other",
+              "properties": {
+                "Application_Type": "other"
+              }
+            },
+            "ingestionFunction": {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('ingestionFunctionName')]",
+              "location": "[parameters('location')]",
+              "kind": "functionapp,linux",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('ingestionFunctionHostingPlanName'))]",
+                "publicNetworkAccess": "Enabled",
+                "reserved": true,
+                "siteConfig": {
+                  "linuxFxVersion": "Node|20",
+                  "appSettings": [
+                    {
+                      "name": "FUNCTIONS_WORKER_RUNTIME",
+                      "value": "node"
+                    },
+                    {
+                      "name": "WEBSITE_RUN_FROM_PACKAGE",
+                      "value": "[parameters('ingestionFunctionPackageUrl')]"
+                    },
+                    {
+                      "name": "TIMER_SCHEDULE",
+                      "value": "[parameters('ingestionFunctionSchedule')]"
+                    },
+                    {
+                      "name": "WEBSITE_CONTENTSHARE",
+                      "value": "[toLower(parameters('ingestionFunctionName'))]"
+                    },
+                    {
+                      "name": "FUNCTIONS_EXTENSION_VERSION",
+                      "value": "~4"
+                    },
+                    {
+                      "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('ingestionFunctionTempStorageAccountName'), environment().suffixes.storage, listKeys('ingestionFunctionTempStorageAccount', '2023-01-01').keys[0].value)]"
+                    },
+                    {
+                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                      "value": "[reference('ingestionFunctionAppInsights').InstrumentationKey]"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage",
+                      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('ingestionFunctionTempStorageAccountName'), environment().suffixes.storage, listKeys('ingestionFunctionTempStorageAccount', '2023-01-01').keys[0].value)]"
+                    },
+                    {
+                      "name": "BLOB_URL",
+                      "value": "[format('https://{0}.blob.core.windows.net', parameters('eventsStorageAccountName'))]"
+                    },
+                    {
+                      "name": "CONTAINER_NAME",
+                      "value": "[parameters('eventsStorageContainerName')]"
+                    },
+                    {
+                      "name": "DATA_COLLECTION_ENDPOINT",
+                      "value": "[reference('dataCollectionEndpoint').logsIngestion.endpoint]"
+                    },
+                    {
+                      "name": "DATA_COLLECTION_RULE_ID",
+                      "value": "[reference('dataCollectionRule').immutableId]"
+                    }
+                  ]
+                },
+                "httpsOnly": true
+              },
+              "dependsOn": [
+                "dataCollectionEndpoint",
+                "dataCollectionRule",
+                "ingestionFunctionAppInsights",
+                "ingestionFunctionHostingPlan",
+                "ingestionFunctionTempStorageAccount"
+              ]
+            },
+            "ingestionFunctionAccessToTempStorage": {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('ingestionFunctionTempStorageAccountName'))]",
+              "name": "[guid(parameters('ingestionFunctionName'), parameters('ingestionFunctionTempStorageAccountName'), 'storage-blob-contributor')]",
+              "properties": {
+                "roleDefinitionId": "[variables('storageBlobDataContributorRole')]",
+                "principalId": "[reference('ingestionFunction', '2024-11-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "ingestionFunction",
+                "ingestionFunctionTempStorageAccount"
+              ]
+            },
+            "ingestionFunctionAccessToInputEvents": {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}/blobServices/{1}/containers/{2}', split(format('{0}/default/{1}', parameters('eventsStorageAccountName'), parameters('eventsStorageContainerName')), '/')[0], split(format('{0}/default/{1}', parameters('eventsStorageAccountName'), parameters('eventsStorageContainerName')), '/')[1], split(format('{0}/default/{1}', parameters('eventsStorageAccountName'), parameters('eventsStorageContainerName')), '/')[2])]",
+              "name": "[guid(parameters('ingestionFunctionName'), format('{0}/default/{1}', parameters('eventsStorageAccountName'), parameters('eventsStorageContainerName')), 'storage-blob-contributor')]",
+              "properties": {
+                "roleDefinitionId": "[variables('storageBlobDataContributorRole')]",
+                "principalId": "[reference('ingestionFunction', '2024-11-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "ingestionFunction"
+              ]
+            },
+            "ingestionFunctionAccessToDcr": {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Insights/dataCollectionRules/{0}', parameters('dataCollectionRuleName'))]",
+              "name": "[guid(parameters('ingestionFunctionName'), parameters('dataCollectionRuleName'), 'monitoring-metrics-publisher')]",
+              "properties": {
+                "roleDefinitionId": "[variables('monitoringMetricsPublisher')]",
+                "principalId": "[reference('ingestionFunction', '2024-11-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "dataCollectionRule",
+                "ingestionFunction"
+              ]
+            },
+            "dcrAccessToSecurityEvents": {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}/tables/{1}', parameters('logAnalyticsWorkspaceName'), variables('securityEventsTableName'))]",
+              "name": "[guid(parameters('dataCollectionRuleName'), variables('securityEventsTableName'), 'monitoring-metrics-publisher')]",
+              "properties": {
+                "roleDefinitionId": "[variables('monitoringMetricsPublisher')]",
+                "principalId": "[reference('dataCollectionRule', '2023-03-11', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "dataCollectionRule",
+                "securityEventsTable"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
