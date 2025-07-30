@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.0.1",
   "parameters": {
     "location": {
       "type": "string",
@@ -197,7 +197,7 @@
           },
           "variables": {
             "ingestionFunctionAppInsightsName": "[parameters('ingestionFunctionName')]",
-            "securityEventsTableName": "RvEventLogs_CL",
+            "securityEventsTableName": "SecurityEvents_CL",
             "securityEventsStreamName": "[format('Custom-{0}', variables('securityEventsTableName'))]",
             "storageBlobDataContributorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
             "monitoringMetricsPublisher": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')]"
