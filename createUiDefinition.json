@@ -1,0 +1,129 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "config": {
+            "isWizard": true,
+            "basics": {
+                "subscription": {
+                    "resourceProviders": [
+                        "Microsoft.Insights/dataCollectionEndpoints",
+                        "Microsoft.Insights/dataCollectionRules",
+                        "Microsoft.OperationalInsights/workspaces"
+                    ]
+                }
+            }
+        },
+        "basics": [
+            {
+                "name": "getLAWorkspace",
+                "type": "Microsoft.Solutions.ArmApiControl",
+                "toolTip": "This filters by workspaces that exist in the Resource Group selected",
+                "condition": "[greater(length(resourceGroup().name),0)]",
+                "request": {
+                    "method": "GET",
+                    "path": "[concat(subscription().id,'/providers/Microsoft.OperationalInsights/workspaces?api-version=2020-08-01')]"
+                }
+            },
+            {
+                "name": "WorkspaceSelectInstruction",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "Select the workspace where you would like to ingest the data into. We will deploy this data connector and supported resources into the same region as your workspace's region"
+                }
+            },
+            {
+                "name": "logAnalyticsWorkspaceName",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Workspace",
+                "placeholder": "Select a workspace",
+                "toolTip": "This dropdown will list the available workspaces to select for data ingestion",
+                "constraints": {
+                    "allowedValues": "[map(basics('getLAWorkspace').value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                    "required": true
+                },
+                "visible": true
+            },
+            {
+                "name": "dataCollectionEndpointName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "dataCollectionEndpointName"
+                }
+            },
+            {
+                "name": "dataCollectionRuleName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "dataCollectionRuleName"
+                }
+            },
+            {
+                "name": "ingestionFunctionHostingPlanName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "ingestionFunctionHostingPlanName"
+                }
+            },
+            {
+                "name": "ingestionFunctionName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "ingestionFunctionName"
+                }
+            },
+            {
+                "name": "ingestionFunctionTempStorageAccountName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "ingestionFunctionTempStorageAccountName"
+                }
+            },
+            {
+                "name": "eventsStorageAccountName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "eventsStorageAccountName"
+                }
+            },
+            {
+                "name": "eventsStorageContainerName",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "eventsStorageContainerName"
+                }
+            },
+            {
+                "name": "ingestionFunctionPackageUrl",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "ingestionFunctionPackageUrl"
+                }
+            }
+        ],
+        "steps": [
+
+        ],
+        "outputs": {
+            "logAnalyticsWorkspaceName": "[basics('logAnalyticsWorkspaceName')]",
+            "dataCollectionEndpointName": "[basics('dataCollectionEndpointName')]",
+            "dataCollectionRuleName": "[basics('dataCollectionRuleName')]",
+            "ingestionFunctionHostingPlanName": "[basics('ingestionFunctionHostingPlanName')]",
+            "ingestionFunctionName": "[basics('ingestionFunctionName')]",
+            "ingestionFunctionTempStorageAccountName": "[basics('ingestionFunctionTempStorageAccountName')]",
+            "eventsStorageAccountName": "[basics('eventsStorageAccountName')]",
+            "eventsStorageContainerName": "[basics('eventsStorageContainerName')]",
+            "ingestionFunctionPackageUrl": "[basics('ingestionFunctionPackageUrl')]"
+        }
+    }
+}
