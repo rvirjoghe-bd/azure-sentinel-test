@@ -197,8 +197,8 @@
           },
           "variables": {
             "ingestionFunctionAppInsightsName": "[parameters('ingestionFunctionName')]",
-            "securityEventsTableName": "SecurityEventsA_CL",
-            "securityEventsStreamName": "Custom-SecurityEvents_CL",
+            "securityEventsTableName": "SecurityEvents_CL",
+            "securityEventsStreamName": "[format('Custom-{0}', variables('securityEventsTableName'))]",
             "storageBlobDataContributorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
             "monitoringMetricsPublisher": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')]"
           },
