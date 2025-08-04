@@ -1,0 +1,33 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 15
+      }
+    },
+    "logLevel": {
+      "default": "Debug",
+      "MyFunction": "Debug"
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)"
+  },
+  "extensions": {
+    "timers": {
+      "scheduleMonitoringEnabled": true
+    },
+    "http": {
+      "routePrefix": "api",
+      "maxOutstandingRequests": 200,
+      "maxConcurrentRequests": 100
+    },
+    "queues": {
+      "batchSize": 16,
+      "newBatchThreshold": 8
+    }
+  }
+}

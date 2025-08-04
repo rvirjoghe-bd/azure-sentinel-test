@@ -1,0 +1,16 @@
+{
+  "Custom-SecurityEvents_CL": [
+    {
+      "name_s": "abc1",
+      "eventType_s": "xyz1"
+    },
+    {
+      "name_s": "abc2",
+      "eventType_s": "xyz2"
+    },
+    {
+      "name_s": "abc3",
+      "eventType_s": "xyz3"
+    }
+  ]
+}

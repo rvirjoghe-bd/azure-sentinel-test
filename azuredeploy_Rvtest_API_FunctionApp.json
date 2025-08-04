@@ -66,8 +66,9 @@
     },
     "ingestionFunctionPackageUrl": {
       "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/rvirjoghe-bd/azure-sentinel-test/main/function.function.zip",
       "metadata": {
-        "description": "The SAS url where the code of the function is stored"
+        "description": "The location of the function code"
       }
     }
   },
@@ -191,7 +192,7 @@
             "ingestionFunctionPackageUrl": {
               "type": "string",
               "metadata": {
-                "description": "The SAS url where the code of the function is stored"
+                "description": "The location of the function code"
               }
             }
           },
